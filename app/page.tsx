@@ -15,6 +15,7 @@ import { ConfirmDialog } from '@/components/confirm-dialog'
 import { createClient } from '@/lib/supabase/client'
 import type { Booking, Property } from '@/lib/types'
 import type { User } from '@supabase/supabase-js'
+import { sendBookingToN8N } from '@/lib/n8n'
 
 // Helper function to format date as YYYY-MM-DD without timezone conversion
 function formatDateForDB(date: Date): string {
@@ -208,6 +209,10 @@ export default function BookingManagement() {
         setBookings(prev =>
           prev.map(b => b.id === editingBooking.id ? updatedBooking : b)
         )
+        
+        // Send to n8n
+        const property = properties.find(p => p.id === updatedBooking.propertyId)
+        sendBookingToN8N('booking_updated', updatedBooking, property)
       }
     } else {
       // Create new booking
@@ -249,9 +254,13 @@ export default function BookingManagement() {
           createdAt: new Date(data.created_at)
         }
         setBookings(prev => [...prev, newBooking])
+        
+        // Send to n8n
+        const property = properties.find(p => p.id === newBooking.propertyId)
+        sendBookingToN8N('booking_created', newBooking, property)
       }
     }
-  }, [editingBooking, user, supabase])
+  }, [editingBooking, user, supabase, properties])
 
   const handleDeleteBooking = useCallback((id: string) => {
     setDeleteBookingId(id)
