@@ -304,8 +304,15 @@ export function BookingModal({
                   <Calendar
                     mode="single"
                     selected={checkIn}
+                    defaultMonth={checkIn}
                     onSelect={(date) => {
                       setCheckIn(date)
+                      // Keep check-out valid: if it's now on/before the new check-in, push it to the next day
+                      if (date && checkOut && checkOut <= date) {
+                        const nextDay = new Date(date)
+                        nextDay.setDate(nextDay.getDate() + 1)
+                        setCheckOut(nextDay)
+                      }
                       setOverlapError(false)
                     }}
                     locale={es}
@@ -334,6 +341,7 @@ export function BookingModal({
                   <Calendar
                     mode="single"
                     selected={checkOut}
+                    defaultMonth={checkOut ?? checkIn}
                     onSelect={(date) => {
                       setCheckOut(date)
                       setOverlapError(false)
