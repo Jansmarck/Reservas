@@ -52,6 +52,8 @@ export function BookingModal({
   const [status, setStatus] = useState<Booking['status']>('pending')
   const [observation, setObservation] = useState('')
   const [agreedPricePerNight, setAgreedPricePerNight] = useState('')
+  const [checkInOpen, setCheckInOpen] = useState(false)
+  const [checkOutOpen, setCheckOutOpen] = useState(false)
 
   useEffect(() => {
     if (existingBooking) {
@@ -287,7 +289,7 @@ export function BookingModal({
                 <CalendarIcon className="h-4 w-4" />
                 Check-in
               </Label>
-              <Popover>
+              <Popover open={checkInOpen} onOpenChange={setCheckInOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -306,14 +308,16 @@ export function BookingModal({
                     selected={checkIn}
                     defaultMonth={checkIn}
                     onSelect={(date) => {
+                      if (!date) return
                       setCheckIn(date)
                       // Keep check-out valid: if it's now on/before the new check-in, push it to the next day
-                      if (date && checkOut && checkOut <= date) {
+                      if (checkOut && checkOut <= date) {
                         const nextDay = new Date(date)
                         nextDay.setDate(nextDay.getDate() + 1)
                         setCheckOut(nextDay)
                       }
                       setOverlapError(false)
+                      setCheckInOpen(false)
                     }}
                     locale={es}
                     disabled={isDateDisabledForCheckIn}
@@ -324,7 +328,7 @@ export function BookingModal({
             </div>
             <div className="space-y-2">
               <Label>Check-out</Label>
-              <Popover>
+              <Popover open={checkOutOpen} onOpenChange={setCheckOutOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -343,8 +347,10 @@ export function BookingModal({
                     selected={checkOut}
                     defaultMonth={checkOut ?? checkIn}
                     onSelect={(date) => {
+                      if (!date) return
                       setCheckOut(date)
                       setOverlapError(false)
+                      setCheckOutOpen(false)
                     }}
                     locale={es}
                     disabled={isDateDisabledForCheckOut}

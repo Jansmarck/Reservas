@@ -20,7 +20,7 @@ interface BookingCalendarProps {
   onBookingClick: (booking: Booking) => void
 }
 
-const DAYS_OF_WEEK = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+const DAYS_OF_WEEK = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 const MONTHS = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -33,7 +33,7 @@ function getCalendarDays(date: Date) {
   const firstDayOfMonth = new Date(year, month, 1)
   
   const startDate = new Date(firstDayOfMonth)
-  startDate.setDate(startDate.getDate() - firstDayOfMonth.getDay())
+  startDate.setDate(startDate.getDate() - ((firstDayOfMonth.getDay() + 6) % 7))
   
   const days: Date[] = []
   const current = new Date(startDate)
